@@ -30,10 +30,11 @@ const googleAuth = (req, res) => {
  */
 const googleCallback = async (req, res) => {
   const { code } = req.query;
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
 
   if (!code) {
     console.error('[Auth Controller] Missing authorization code in callback');
-    return res.redirect(`${process.env.FRONTEND_URL}/login?error=missing_code`);
+    return res.redirect(`${frontendUrl}/login?error=missing_code`);
   }
 
   try {
@@ -42,7 +43,7 @@ const googleCallback = async (req, res) => {
     
     if (!tokens.access_token) {
       console.error('[Auth Controller] Access token not returned by Google');
-      return res.redirect(`${process.env.FRONTEND_URL}/login?error=no_access_token`);
+      return res.redirect(`${frontendUrl}/login?error=no_access_token`);
     }
 
     // Get user info from Google
@@ -50,7 +51,7 @@ const googleCallback = async (req, res) => {
     
     if (!profile.email) {
       console.error('[Auth Controller] Google profile missing email field');
-      return res.redirect(`${process.env.FRONTEND_URL}/login?error=no_email`);
+      return res.redirect(`${frontendUrl}/login?error=no_email`);
     }
 
     // Encrypt tokens before storing
@@ -79,7 +80,7 @@ const googleCallback = async (req, res) => {
         // This is a new user but no refresh token was provided. This shouldn't happen
         // if prompt='consent' is used, but we handle it just in case.
         console.error('[Auth Controller] Missing refresh token for new user registration.');
-        return res.redirect(`${process.env.FRONTEND_URL}/login?error=missing_refresh_token`);
+        return res.redirect(`${frontendUrl}/login?error=missing_refresh_token`);
       }
 
       user = new User({
@@ -98,11 +99,14 @@ const googleCallback = async (req, res) => {
     // Generate app JWT
     const jwtToken = generateToken(user._id);
 
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+
     // Redirect to frontend dashboard with token
-    res.redirect(`${process.env.FRONTEND_URL}/auth-callback?token=${jwtToken}`);
+    res.redirect(`${frontendUrl}/auth-callback?token=${jwtToken}`);
   } catch (err) {
     console.error('[Auth Controller] Error during Google Callback handling:', err.message);
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=callback_failed`);
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    res.redirect(`${frontendUrl}/login?error=callback_failed`);
   }
 };
 

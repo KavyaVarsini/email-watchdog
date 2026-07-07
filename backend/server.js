@@ -12,7 +12,8 @@ const requiredEnv = [
   'GOOGLE_CLIENT_ID',
   'GOOGLE_CLIENT_SECRET',
   'GOOGLE_REDIRECT_URI',
-  'TELEGRAM_BOT_TOKEN'
+  'TELEGRAM_BOT_TOKEN',
+  'FRONTEND_URL'
 ];
 
 for (const key of requiredEnv) {
