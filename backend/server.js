@@ -1,12 +1,32 @@
+const path = require('path');
+const dotenv = require('dotenv');
+
+// Load environment variables using absolute path relative to this file
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+// Validate critical environment variables on startup
+const requiredEnv = [
+  'MONGO_URI',
+  'JWT_SECRET',
+  'ENCRYPTION_KEY',
+  'GOOGLE_CLIENT_ID',
+  'GOOGLE_CLIENT_SECRET',
+  'GOOGLE_REDIRECT_URI',
+  'TELEGRAM_BOT_TOKEN'
+];
+
+for (const key of requiredEnv) {
+  if (!process.env[key]) {
+    console.error(`[Server Error] Missing required environment variable: ${key}`);
+    process.exit(1);
+  }
+}
+
 const express = require('express');
 const cors = require('cors');
-const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const { initCron, watchEmails } = require('./jobs/emailWatcher');
 const { protect } = require('./middleware/auth');
-
-// Load environment variables
-dotenv.config();
 
 // Connect to Database
 connectDB();
