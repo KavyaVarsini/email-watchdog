@@ -28,6 +28,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const { initCron, watchEmails } = require('./jobs/emailWatcher');
 const { protect } = require('./middleware/auth');
+const keepAlive = require('./utils/keepAlive');
 
 // Connect to Database
 connectDB();
@@ -77,4 +78,7 @@ app.listen(PORT, () => {
   
   // Initialize cron job
   initCron();
+  
+  // Start keep-alive self-pinging to prevent sleeping on free hosting tiers
+  keepAlive();
 });
